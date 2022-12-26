@@ -1,0 +1,20 @@
+[
+  {
+    "width": 50,
+    "height": 50,
+    "mapVariant": false,
+    "startGrass": 30,
+    "grassEnergy": 10,
+    "growingGrass": 20,
+    "growingVariant": false,
+    "startAnimals": 30,
+    "startAnimalEnergy": 50,
+    "healthyEnergy": 30,
+    "populateEnergyTaken": 20,
+    "minMutations": 0,
+    "maxMutations": 10,
+    "mutationVariant": false,
+    "genomeLength": 40,
+    "behaviourVariant": false
+  }
+]
