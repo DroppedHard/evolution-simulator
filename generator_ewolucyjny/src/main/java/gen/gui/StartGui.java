@@ -2,6 +2,7 @@ package gen.gui;
 
 import gen.config.Config;
 import gen.config.Configs;
+import gen.sim.gui.SimulationApp;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,10 +25,12 @@ public class StartGui extends Application {
     private final int prefConfigHeight = 100;
 
     public Map<String, Integer> data = new HashMap<>();
-    private Map<String, Object> inputs = new HashMap<>();
+    private final Map<String, Object> inputs = new HashMap<>();
+    private final ArrayList<SimulationApp> simulations = new ArrayList<>();   // do 5 wątków by nie zżerało zasobów za bardzo
+    private final int simulationLimit = 5;
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Generator Ewolucyjny");
+        primaryStage.setTitle("Evolution Generator");
         content = new VBox(5);
 //        content.fillWidthProperty().setValue(false);
         addInputs();
@@ -62,12 +66,12 @@ public class StartGui extends Application {
     private void addSubmit() {
         Button submit  =  new Button("Start Simulation");
         submit.setOnAction(action -> {
-            for (Map.Entry<String, Integer> detail : data.entrySet()){
-                System.out.println(detail.getKey() + " - " + detail.getValue());
-            }
+//            for (Map.Entry<String, Integer> detail : data.entrySet()){
+//                System.out.println(detail.getKey() + " - " + detail.getValue());
+//            }
             String check = verifyData();
             if (check.equals("OK")) {
-                System.out.println("Jest git i zaczynamy!");
+                startSimulation();
             }else {
                 System.out.println(check);
             }
@@ -79,7 +83,7 @@ public class StartGui extends Application {
 
     private String verifyData() {
         for (Map.Entry<String, Integer> detail : data.entrySet()){  // podwójne zabezpieczenie przed ujemnymi wartościami
-            System.out.println(detail.getKey() + " - " + detail.getValue());
+//            System.out.println(detail.getKey() + " - " + detail.getValue());
             if (!detail.getKey().contains("Variant") && !detail.getKey().contains("Mutations")
                     && detail.getValue() <= 0){
                 return "Any numeric value cannot be negative or equal to 0!";
@@ -145,9 +149,7 @@ public class StartGui extends Application {
         box.alignmentProperty().setValue(Pos.CENTER);
         content.getChildren().add(box);
         list.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        list.getSelectionModel().selectedItemProperty().addListener((obs,ov,nv)->{
-            setConfigData(list.getSelectionModel().getSelectedItems().get(0));
-        });
+        list.getSelectionModel().selectedItemProperty().addListener((obs,ov,nv)-> setConfigData(list.getSelectionModel().getSelectedItems().get(0)));
     }
 
     private void setConfigData(Config list) {
@@ -168,6 +170,10 @@ public class StartGui extends Application {
         updateBooleanInput("mutationVariant", list.mutationVariant);
         updateNumericInput("genomeLength", list.genomeLength);
         updateBooleanInput("behaviourVariant", list.behaviourVariant);
+
+//        for (Map.Entry<String, Integer> el:data.entrySet()) {
+//            System.out.println(el.getKey()+" - "+el.getValue());
+//        }
     }
 
     private void updateBooleanInput(String label, boolean value) {
@@ -180,5 +186,31 @@ public class StartGui extends Application {
         TextField field = (TextField) inputs.get(label);
         field.setText(Integer.toString(value));
         data.put(label, value);
+    }
+    private void startSimulation() {
+        Config config = new Config("running",
+                data.get("width"),
+                data.get("height"),
+                data.get("mapVariant") == 1,
+                data.get("startGrass"),
+                data.get("grassEnergy"),
+                data.get("growingGrass"),
+                data.get("growingVariant") == 1,
+                data.get("startAnimals"),
+                data.get("startAnimalEnergy"),
+                data.get("healthyEnergy"),
+                data.get("populateEnergyTaken"),
+                data.get("minMutations"),
+                data.get("maxMutations"),
+                data.get("mutationVariant") == 1,
+                data.get("genomeLength"),
+                data.get("behaviourVariant") == 1
+        );
+//        if (simulations.size() >= simulationLimit){
+//            System.out.println("Too much simulations opened - I do not want to take responsibility for destroyed hardware");
+//        } else {
+            SimulationApp sim = new SimulationApp(config);
+            simulations.add(sim);
+//        }
     }
 }
