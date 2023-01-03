@@ -17,14 +17,17 @@ public class SimulationApp implements Runnable{
     int mapWidth = 500;
     int mapHeight = 500;
     int infoWidth = 300;
-    Thread simulationThread;    // tutaj będzie symulacja dnia - będzie ją można zatrzymać, albo przerwać czy coś tam
+    final Thread simulationThread;
     MapCore map;
     MapVisualizer mapVisualizer;
     DataVisualizer dataVisualizer;
     int delay = 100;
-    boolean duringSimulation = false;
+    boolean duringSimulation;
+    boolean isPaused;
     public SimulationApp(Config cfg){
         configuration = cfg;
+        simulationThread = new Thread(this);
+        duringSimulation = true;
         start();
     }
     public void start() {
@@ -46,8 +49,6 @@ public class SimulationApp implements Runnable{
         Scene scene = new Scene(content);
         simulationStage.setScene(scene);
         simulationStage.show();
-        simulationThread = new Thread(this);
-        duringSimulation = true;
         simulationThread.start();
     }
     private void addMap(){
@@ -55,7 +56,7 @@ public class SimulationApp implements Runnable{
         mapVisualizer = new MapVisualizer(mapWidth, mapHeight, map, grid);
     }
     private void addStatistics(){
-        dataVisualizer = new DataVisualizer(map, statistics);
+        dataVisualizer = new DataVisualizer(map, statistics, this);
     }
 
     @Override
@@ -78,10 +79,27 @@ public class SimulationApp implements Runnable{
                 dataVisualizer.updateData();
             });
             map.endDayAndRemoveDeadAnimals();
+            synchronized (this) {
+                while (isPaused) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        System.out.println("Simulation thread stopped");
+                    }
+                }
+            }
         }
     }
     private void exitSimulation() {
-        simulationThread.interrupt();
         duringSimulation = false;
+        resumeSim();
+        simulationThread.interrupt();
+    }
+    synchronized void pauseSim(){
+        isPaused = true;
+    }
+    synchronized void resumeSim(){
+        isPaused = false;
+        notify();
     }
 }

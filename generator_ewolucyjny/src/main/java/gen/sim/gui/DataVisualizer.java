@@ -1,6 +1,7 @@
 package gen.sim.gui;
 
 import gen.sim.maps.MapCore;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -16,11 +17,14 @@ public class DataVisualizer {
     Label mostPopularGenomeLabel;
     Label avgEnergyLabel;
     Label avgLifespanLabel;
+    final SimulationApp simApp;
     private final DecimalFormat df = new DecimalFormat("0.00");
-    public DataVisualizer(MapCore map, VBox stats){
+    public DataVisualizer(MapCore map, VBox stats, SimulationApp simApp){
         this.map = map;
+        this.simApp = simApp;
         statistics = stats;
         addStatisticFields();
+        addPausePlayButton();
     }
 
     private void addStatisticFields() {
@@ -63,5 +67,19 @@ public class DataVisualizer {
         avgEnergyLabel.textProperty().setValue(df.format(map.animalObserver.averageEnergy));
         avgLifespanLabel.textProperty().setValue(df.format(map.animalObserver.averageLifeSpan));
         mostPopularGenomeLabel.textProperty().setValue(map.animalObserver.mostPopularGenome);
+    }
+    public void addPausePlayButton() {
+        Button pausePlay = new Button("Pause");
+        pausePlay.setOnAction((val)-> {
+            if (simApp.isPaused) {
+                System.out.println();
+                pausePlay.textProperty().setValue("Pause");
+                simApp.resumeSim();
+            } else {
+                pausePlay.textProperty().setValue("Play");
+                simApp.pauseSim();
+            }
+        });
+        statistics.getChildren().add(pausePlay);
     }
 }

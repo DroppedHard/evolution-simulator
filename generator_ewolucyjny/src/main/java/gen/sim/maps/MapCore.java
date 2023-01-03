@@ -107,7 +107,7 @@ public class MapCore {
 
     public int getFreeFields() {
         int fields = config.width * config.height;
-        for (PositionMechanics pos: elements.values()) {
+        for (PositionMechanics pos : elements.values()) {
             if (pos.grass == null && pos.animals.isEmpty()) {
                 fields--;
             }
