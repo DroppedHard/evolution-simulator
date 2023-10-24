@@ -153,7 +153,7 @@ public class StartGui extends Application {
     }
 
     private void setConfigData(Config list) {
-        System.out.println(list);
+        System.out.println("\n" + list);
         updateNumericInput("width", list.width);
         updateNumericInput("height", list.height);
         updateBooleanInput("mapVariant", list.mapVariant);
@@ -209,7 +209,11 @@ public class StartGui extends Application {
 //        if (simulations.size() >= simulationLimit){
 //            System.out.println("Too much simulations opened - I do not want to take responsibility for destroyed hardware");
 //        } else {
-            SimulationApp sim = new SimulationApp(config);
+//            System.out.println(config.mapVariant + " - " + data.get("mapVariant"));
+//        System.out.println(config.growingVariant + " - " + data.get("growingVariant"));
+//        System.out.println(config.mutationVariant + " - " + data.get("mutationVariant"));
+//        System.out.println(config.behaviourVariant + " - " + data.get("behaviourVariant"));
+        SimulationApp sim = new SimulationApp(config);
             simulations.add(sim);
 //        }
     }

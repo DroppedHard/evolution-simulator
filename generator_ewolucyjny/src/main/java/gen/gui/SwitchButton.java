@@ -44,13 +44,13 @@ public class SwitchButton extends StackPane {
                 back.setFill(Color.valueOf("#cfe2f3"));
                 setAlignment(button, Pos.CENTER_LEFT);
                 state = false;
-                data.put(id, 0);
+                data.put(id, 1);
             } else {
                 button.setStyle(buttonStyleOn);
                 back.setFill(Color.valueOf("#6fa8dc"));
                 setAlignment(button, Pos.CENTER_RIGHT);
                 state = true;
-                data.put(id, 1);
+                data.put(id, 0);
             }
         };
 
